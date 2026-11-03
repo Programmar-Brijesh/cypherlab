@@ -482,7 +482,7 @@
         <div class="saas-hero-grid"></div>
         <div class="saas-hero-content">
             <div class="saas-badge">
-                <span class="pulse-dot"></span> CYPHERLABS UTILITY SUITE
+                <span class="pulse-dot"></span> CYPHERLABS UTILITY SUITE's
             </div>
             <h1 class="saas-hero-title">
                 Empower Your Workflow with <span class="grad-text">Developer Utilities</span>
