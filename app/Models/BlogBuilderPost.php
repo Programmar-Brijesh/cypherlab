@@ -62,6 +62,16 @@ class BlogBuilderPost extends Model
         return asset('uploads/blog/' . $this->featured_image);
     }
 
+    public function getEstimatedReadingTimeAttribute(): int
+    {
+        if (!empty($this->reading_time) && (int) $this->reading_time > 0) {
+            return (int) $this->reading_time;
+        }
+
+        $wordCount = str_word_count(strip_tags((string) ($this->html ?? $this->excerpt ?? '')));
+        return max(1, (int) ceil($wordCount / 200));
+    }
+
     /**
      * Relationship: A post belongs to a user (author).
      */

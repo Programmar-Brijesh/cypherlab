@@ -12,4 +12,9 @@ class BlogCategory extends Model
     {
         return $this->hasMany(BlogPost::class, 'category_id');
     }
+
+    public function builderPosts()
+    {
+        return $this->hasMany(BlogBuilderPost::class, 'category_id');
+    }
 }

@@ -17,16 +17,101 @@ class BlogpostController extends Controller
         protected BlogViewService $viewService
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        // Sirf published posts nikalenge, latest pehle dikhayenge, aur pagination lagayenge
-        $posts = BlogBuilderPost::where('status', 'published')
-            ->orderBy('published_at', 'desc')
-            ->paginate(9); // Ek page par 9 posts
+        $search = trim((string) $request->query('search', ''));
+        $categorySlug = trim((string) $request->query('category', ''));
 
+        // Load categories that exist in the database with published post count
+        $categories = BlogCategory::withCount(['builderPosts' => function ($q) {
+            $q->where('status', 'published');
+        }])->orderBy('name')->get();
 
+        $selectedCategory = null;
+        if (!empty($categorySlug)) {
+            $selectedCategory = $categories->firstWhere('slug', $categorySlug)
+                ?? BlogCategory::where('slug', $categorySlug)->first();
+        }
 
-        return view('frontend.blog.index', compact('posts'));
+        // Total published posts count (including uncategorized)
+        $totalPublishedPosts = BlogBuilderPost::where('status', 'published')->count();
+
+        // Dedicated Featured Article showcase:
+        // Shown on initial page 1 view, strictly respecting active search and category filters
+        $currentPage = (int) $request->query('page', 1);
+        $featuredPost = null;
+
+        if ($currentPage <= 1) {
+            $featuredQuery = BlogBuilderPost::where('status', 'published')
+                ->with(['category', 'author']);
+
+            // Respect category filter for featured article
+            if ($selectedCategory) {
+                $featuredQuery->where('category_id', $selectedCategory->id);
+            }
+
+            // Respect search filter for featured article
+            if (!empty($search)) {
+                $featuredQuery->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('excerpt', 'like', "%{$search}%")
+                        ->orWhere('meta_description', 'like', "%{$search}%");
+                });
+            }
+
+            // Prefer explicitly featured post matching current filters
+            $featuredPost = (clone $featuredQuery)
+                ->where('is_featured', true)
+                ->orderByDesc('published_at')
+                ->orderByDesc('created_at')
+                ->first();
+
+            // On default main index (no search, no category filter), fallback to latest post if none marked featured
+            if (!$featuredPost && empty($search) && empty($categorySlug)) {
+                $featuredPost = (clone $featuredQuery)
+                    ->orderByDesc('published_at')
+                    ->orderByDesc('created_at')
+                    ->first();
+            }
+        }
+
+        // Build latest articles query
+        $query = BlogBuilderPost::where('status', 'published')
+            ->with(['category', 'author']);
+
+        // Prevent duplicating the featured article in the grid
+        if ($featuredPost) {
+            $query->where('id', '!=', $featuredPost->id);
+        }
+
+        // Filter by category if selected
+        if ($selectedCategory) {
+            $query->where('category_id', $selectedCategory->id);
+        }
+
+        // Filter by search keyword
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%")
+                    ->orWhere('meta_description', 'like', "%{$search}%");
+            });
+        }
+
+        $posts = $query->orderByDesc('published_at')
+            ->orderByDesc('created_at')
+            ->paginate(9)
+            ->withQueryString();
+
+        return view('frontend.blog.index', compact(
+            'posts',
+            'categories',
+            'featuredPost',
+            'selectedCategory',
+            'search',
+            'categorySlug',
+            'totalPublishedPosts'
+        ));
     }
 
 
