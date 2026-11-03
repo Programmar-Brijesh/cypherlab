@@ -48,6 +48,9 @@ class ArticleRenderTest extends TestCase
         $response->assertSee('"@context": "https://schema.org"', false);
         $response->assertSee('"@type": "Article"', false);
         $response->assertSee('Why Use QR Codes?');
+        $response->assertSee('wx-breadcrumbs', false);
+        $response->assertSee('id="wx-progress-bar"', false);
+        $response->assertSee('Written by Brijesh Verma');
     }
 
     public function test_article_with_multiple_headings_renders_toc_elements(): void
@@ -73,8 +76,12 @@ class ArticleRenderTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('id="wx-toc-card"', false);
         $response->assertSee('id="wx-toc-list"', false);
+        $response->assertSee('id="wx-toc-header"', false);
+        $response->assertSee('id="wx-toc-toggle-btn"', false);
         $response->assertSee('wx-share-card', false);
+        $response->assertSee('wx-author-card', false);
         $response->assertSee('wx-explore-card', false);
+        $response->assertSee('Related Articles');
         $response->assertSee('wx-post-main', false);
         $response->assertSee('What Is a QR Code Generator?');
         $response->assertSee('Key Features');

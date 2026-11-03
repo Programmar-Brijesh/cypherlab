@@ -65,7 +65,7 @@
         --wx-text-muted: #94A3B8;
     }
 
-    /* TOP PROGRESS BAR */
+    /* THIN READING PROGRESS INDICATOR (Positioned below navbar) */
     #wx-progress-bar {
         position: fixed;
         top: 0;
@@ -73,9 +73,94 @@
         height: 3px;
         background: linear-gradient(90deg, var(--wx-neon-blue), var(--wx-neon-cyan), var(--wx-violet));
         width: 0%;
-        z-index: 10000;
-        transition: width 0.1s ease-out;
-        box-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        z-index: 9998;
+        transition: width 0.08s ease-out;
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.85);
+        pointer-events: none;
+    }
+
+    /* BREADCRUMB NAVIGATION */
+    .wx-breadcrumbs-nav {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .wx-breadcrumbs {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12.5px;
+        font-family: 'Fira Code', monospace;
+        flex-wrap: wrap;
+    }
+
+    .wx-breadcrumb-item a {
+        color: var(--wx-text-muted);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .wx-breadcrumb-item a:hover {
+        color: var(--wx-neon-blue);
+    }
+
+    .wx-breadcrumb-separator {
+        color: rgba(148, 163, 184, 0.4);
+        font-size: 9px;
+    }
+
+    .wx-breadcrumb-item.active {
+        color: var(--wx-neon-cyan);
+        font-weight: 600;
+    }
+
+    /* COLLAPSIBLE TOC & CONTROLS */
+    .wx-toc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        margin-bottom: 10px;
+        transition: all 0.2s ease;
+    }
+
+    .wx-toc-header:hover {
+        color: var(--wx-neon-cyan);
+    }
+
+    .wx-toc-chevron {
+        font-size: 11px;
+        transition: transform 0.25s ease;
+    }
+
+    .wx-toc-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid rgba(0, 212, 255, 0.22);
+        color: var(--wx-neon-cyan);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+    }
+
+    .wx-toc-toggle-btn:hover {
+        background: rgba(0, 212, 255, 0.18);
+        border-color: var(--wx-neon-blue);
+        color: #ffffff;
     }
 
     /* MAIN WRAPPER WITH AMBIENT GLOW */
@@ -218,64 +303,151 @@
     }
 
     @media (max-width: 991.98px) {
-        /* Mobile Layout Ordering (< 992px) - 100% Normal Document Flow:
-           1. Website Navbar (in layout)
-           2. Featured Hero Image
-           3. Blog Title
-           4. Author Name
-           5. Published Date
-           6. Reading Time
-           7. Total Views
-           8. Table of Contents
+        /* Mobile Layout Ordering (< 992px) - Content-First Reading Experience:
+           1. Website navbar (in layout)
+           2. Breadcrumb navigation
+           3. Blog title (H1)
+           4. Short article excerpt
+           5. Author name, publication date, reading time and total views
+           6. Featured blog image
+           7. Table of Contents
+           8. Main article content
            9. Share Article
-           10. Explore More
-           11. Main Blog Content
+           10. Author biography
+           11. Related articles
+           12. Footer (in layout)
         */
         .wx-post-wrapper {
             display: block;
-            padding-top: 16px;
-        }
-
-        .wx-featured-hero-container {
-            width: 100%;
-            max-width: 960px;
-            margin: 0 auto 20px auto;
-            padding: 0 16px;
-            box-sizing: border-box;
+            padding-top: 14px;
+            padding-bottom: 48px;
         }
 
         .wx-post-header {
             width: 100%;
-            max-width: 960px;
+            max-width: 760px;
+            margin: 0 auto 20px auto;
+            padding: 0 16px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        .wx-breadcrumbs-nav {
+            justify-content: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .wx-post-title {
+            font-size: clamp(22px, 5.2vw, 32px);
+            line-height: 1.28;
+            margin-bottom: 12px;
+        }
+
+        .wx-post-excerpt {
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 0 0 14px 0;
+            color: #94A3B8;
+        }
+
+        .wx-post-meta {
+            justify-content: flex-start;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .wx-meta-item {
+            padding: 3px 10px;
+        }
+
+        .wx-featured-hero-container {
+            width: 100%;
+            max-width: 760px;
             margin: 0 auto 24px auto;
             padding: 0 16px;
             box-sizing: border-box;
-            text-align: center;
+        }
+
+        .wx-featured-hero-img {
+            max-height: 320px;
+            border-radius: 12px;
         }
 
         .wx-post-container {
             display: block;
             width: 100%;
-            max-width: 960px;
+            max-width: 760px;
             margin: 0 auto;
             padding: 0 16px;
             box-sizing: border-box;
         }
 
-        .wx-post-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            position: static !important;
-            top: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-            overflow-y: visible !important;
-            overflow-x: visible !important;
-            padding-right: 0 !important;
-            width: 100% !important;
-            margin: 0 0 28px 0;
+        .wx-post-main {
+            display: block;
+            width: 100%;
+        }
+
+        /* 3. Comfortable 16-17px body typography & ~1.7 line-height */
+        .wx-post-body {
+            width: 100%;
+            font-size: 16.5px;
+            line-height: 1.72;
+            color: #CBD5E1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .wx-post-body p {
+            margin-bottom: 1.35rem;
+        }
+
+        .wx-post-body h1 {
+            font-size: 1.55rem;
+            margin-top: 2rem;
+            margin-bottom: 0.85rem;
+            line-height: 1.32;
+        }
+
+        .wx-post-body h2 {
+            font-size: 1.38rem;
+            margin-top: 2.2rem;
+            margin-bottom: 0.85rem;
+            line-height: 1.32;
+        }
+
+        .wx-post-body h3 {
+            font-size: 1.18rem;
+            margin-top: 1.8rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.35;
+        }
+
+        .wx-post-body h4,
+        .wx-post-body h5,
+        .wx-post-body h6 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.65rem;
+        }
+
+        /* Responsive images & media */
+        .wx-post-body img {
+            max-width: 100% !important;
+            height: auto !important;
+            margin: 1.4rem auto;
+            border-radius: 10px;
+        }
+
+        /* Prevent horizontal overflow */
+        .wx-post-body pre,
+        .wx-code-wrapper,
+        .wx-post-body table,
+        .wx-post-body iframe {
+            max-width: 100% !important;
             box-sizing: border-box;
+        }
+
+        .wx-post-sidebar {
+            display: none; /* Relocated into postMain on mobile */
         }
 
         .wx-sidebar-card {
@@ -284,32 +456,35 @@
             box-sizing: border-box;
         }
 
+        /* 7. TOC immediately before article body */
         #wx-toc-card {
             position: static !important;
             width: 100% !important;
+            margin-bottom: 24px;
             box-sizing: border-box;
         }
 
         .wx-toc-list {
-            max-height: 260px !important;
+            max-height: 280px !important;
         }
 
-        .wx-post-main {
-            display: block;
-            width: 100%;
+        /* 9. Share Article after article body */
+        .wx-share-card {
+            margin-top: 28px;
+            margin-bottom: 20px;
         }
 
-        .wx-post-body {
-            width: 100%;
-            line-height: 1.78;
-            font-size: 1.02rem;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
+        /* 10. Author Biography after Share Article */
         .wx-author-card {
             width: 100%;
-            margin: 32px auto 24px auto;
+            margin: 0 0 20px 0;
+            box-sizing: border-box;
+        }
+
+        /* 11. Related Articles after Author Biography */
+        .wx-explore-card {
+            width: 100%;
+            margin: 0 0 24px 0;
             box-sizing: border-box;
         }
     }
@@ -1393,6 +1568,29 @@
 
     <!-- HEADER SECTION -->
     <div class="wx-post-header">
+        <!-- BREADCRUMB NAVIGATION -->
+        <nav aria-label="breadcrumb" class="wx-breadcrumbs-nav">
+            <ol class="wx-breadcrumbs">
+                <li class="wx-breadcrumb-item">
+                    <a href="{{ route('home') }}"><i class="fas fa-home me-1"></i>Home</a>
+                </li>
+                <li class="wx-breadcrumb-separator"><i class="fas fa-chevron-right"></i></li>
+                <li class="wx-breadcrumb-item">
+                    <a href="{{ route('blog.index') }}">Blog</a>
+                </li>
+                @if($post->category)
+                <li class="wx-breadcrumb-separator"><i class="fas fa-chevron-right"></i></li>
+                <li class="wx-breadcrumb-item">
+                    <a href="{{ route('blog.category', $post->category->slug) }}">{{ $post->category->name }}</a>
+                </li>
+                @endif
+                <li class="wx-breadcrumb-separator"><i class="fas fa-chevron-right"></i></li>
+                <li class="wx-breadcrumb-item active" aria-current="page">
+                    <span>{{ Str::limit($post->title, 28) }}</span>
+                </li>
+            </ol>
+        </nav>
+
         <a href="{{ route('blog.index') }}" class="wx-back-btn">
             <i class="fas fa-arrow-left"></i> Back to Articles
         </a>
@@ -1462,10 +1660,19 @@
             
             <!-- TABLE OF CONTENTS CARD -->
             <div class="wx-sidebar-card" id="wx-toc-card" style="display: none;">
-                <div class="wx-sidebar-title">
-                    <i class="fas fa-list-ul"></i> Table of Contents
+                <div class="wx-sidebar-title wx-toc-header" id="wx-toc-header" role="button" tabindex="0" aria-expanded="true" title="Click to collapse / expand Table of Contents">
+                    <span><i class="fas fa-list-ul me-2"></i> Table of Contents</span>
+                    <i class="fas fa-chevron-down wx-toc-chevron" id="wx-toc-chevron"></i>
                 </div>
-                <ul class="wx-toc-list" id="wx-toc-list"></ul>
+                <div class="wx-toc-content-wrapper" id="wx-toc-content-wrapper">
+                    <ul class="wx-toc-list" id="wx-toc-list"></ul>
+                    <div id="wx-toc-expand-container" style="display: none;">
+                        <button type="button" class="wx-toc-toggle-btn" id="wx-toc-toggle-btn">
+                            <span id="wx-toc-toggle-text">Show All Headings</span>
+                            <i class="fas fa-chevron-down ms-1" id="wx-toc-toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- SHARE CARD -->
@@ -1492,7 +1699,7 @@
             <!-- QUICK NAVIGATION CARD -->
             <div class="wx-sidebar-card wx-explore-card">
                 <div class="wx-sidebar-title">
-                    <i class="fas fa-compass"></i> Explore More
+                    <i class="fas fa-compass"></i> Related Articles
                 </div>
                 <a href="{{ route('blog.index') }}" class="btn btn-outline-info w-100 btn-sm rounded-pill" style="border-color: var(--wx-border-color); color: var(--wx-neon-blue);">
                     <i class="fas fa-th-large me-1"></i> All Articles
@@ -1516,21 +1723,70 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         
-        // 1. SCROLL READING PROGRESS BAR
+        // 1. DYNAMIC READING PROGRESS BAR
+        // Calculated based on article body scroll progress and positioned below the navbar
         const progressBar = document.getElementById('wx-progress-bar');
-        window.addEventListener('scroll', function () {
-            const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-            if (totalHeight > 0) {
-                const progress = (window.scrollY / totalHeight) * 100;
-                progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+        const articleBodyEl = document.getElementById('wx-article-body');
+        const navbarEl = document.querySelector('.navbar');
+
+        function updateProgress() {
+            if (!progressBar) return;
+
+            // Position progress bar below navbar without interfering with navigation
+            if (navbarEl) {
+                const navRect = navbarEl.getBoundingClientRect();
+                if (navRect.bottom > 0) {
+                    progressBar.style.top = Math.max(0, navRect.bottom) + 'px';
+                } else {
+                    progressBar.style.top = '0px';
+                }
+            } else {
+                progressBar.style.top = '0px';
             }
-        });
+
+            // Calculate progress based on article scroll
+            if (articleBodyEl) {
+                const articleRect = articleBodyEl.getBoundingClientRect();
+                const articleTop = window.scrollY + articleRect.top;
+                const articleHeight = articleBodyEl.offsetHeight;
+                const viewportHeight = window.innerHeight;
+
+                const startScroll = articleTop - 120;
+                const endScroll = articleTop + articleHeight - (viewportHeight * 0.7);
+
+                if (window.scrollY < startScroll) {
+                    progressBar.style.width = '0%';
+                } else if (window.scrollY >= endScroll) {
+                    progressBar.style.width = '100%';
+                } else {
+                    const percentage = ((window.scrollY - startScroll) / (endScroll - startScroll)) * 100;
+                    progressBar.style.width = Math.min(100, Math.max(0, percentage)) + '%';
+                }
+            } else {
+                const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+                if (totalHeight > 0) {
+                    const progress = (window.scrollY / totalHeight) * 100;
+                    progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+                }
+            }
+        }
+
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        window.addEventListener('resize', updateProgress, { passive: true });
+        updateProgress();
 
         // 2. AUTO GENERATE TABLE OF CONTENTS (TOC)
         const articleBody = document.getElementById('wx-article-body');
         const headings = articleBody.querySelectorAll('h2, h3');
         const tocCard = document.getElementById('wx-toc-card');
         const tocList = document.getElementById('wx-toc-list');
+        const tocHeader = document.getElementById('wx-toc-header');
+        const tocContentWrapper = document.getElementById('wx-toc-content-wrapper');
+        const tocChevron = document.getElementById('wx-toc-chevron');
+        const tocExpandContainer = document.getElementById('wx-toc-expand-container');
+        const tocToggleBtn = document.getElementById('wx-toc-toggle-btn');
+        const tocToggleText = document.getElementById('wx-toc-toggle-text');
+        const tocToggleIcon = document.getElementById('wx-toc-toggle-icon');
 
         if (headings.length > 0) {
             tocCard.style.display = 'block';
@@ -1540,6 +1796,8 @@
             let userTocScrollTimeout = null;
             let isClickNavigating = false;
             let clickNavTimeout = null;
+            const maxVisibleInitially = 6;
+            let isTocExpanded = false;
 
             // Pause automatic TOC centering while the user is manually scrolling/touching the TOC
             const markUserScrollingToc = () => {
@@ -1601,6 +1859,10 @@
                 });
 
                 if (activeItem) {
+                    // Reveal active heading if it is currently hidden under "Show All"
+                    if (activeItem.classList.contains('wx-toc-item-extra') && !isTocExpanded && tocToggleBtn) {
+                        tocToggleBtn.click();
+                    }
                     scrollActiveTocItemIntoView(activeItem, isClick);
                 }
             };
@@ -1613,6 +1875,12 @@
                 const li = document.createElement('li');
                 li.className = 'wx-toc-item ' + (heading.tagName.toLowerCase() === 'h3' ? 'level-3' : 'level-2');
                 
+                // Initially show up to 6 headings
+                if (index >= maxVisibleInitially) {
+                    li.classList.add('wx-toc-item-extra');
+                    li.style.display = 'none';
+                }
+
                 const a = document.createElement('a');
                 a.href = '#' + heading.id;
                 a.textContent = heading.textContent;
@@ -1638,6 +1906,43 @@
                 li.appendChild(a);
                 tocList.appendChild(li);
             });
+
+            // Show All / Show Less control
+            if (headings.length > maxVisibleInitially && tocExpandContainer && tocToggleBtn) {
+                tocExpandContainer.style.display = 'block';
+                tocToggleText.textContent = `Show All (${headings.length} headings)`;
+
+                tocToggleBtn.addEventListener('click', function () {
+                    isTocExpanded = !isTocExpanded;
+                    const extraItems = tocList.querySelectorAll('.wx-toc-item-extra');
+                    extraItems.forEach(item => {
+                        item.style.display = isTocExpanded ? 'block' : 'none';
+                    });
+
+                    if (isTocExpanded) {
+                        tocToggleText.textContent = 'Show Less';
+                        if (tocToggleIcon) tocToggleIcon.className = 'fas fa-chevron-up ms-1';
+                    } else {
+                        tocToggleText.textContent = `Show All (${headings.length} headings)`;
+                        if (tocToggleIcon) tocToggleIcon.className = 'fas fa-chevron-down ms-1';
+                    }
+                });
+            }
+
+            // Collapsible TOC card header
+            if (tocHeader && tocContentWrapper) {
+                tocHeader.addEventListener('click', function () {
+                    const isCollapsed = tocCard.classList.toggle('wx-toc-collapsed');
+                    tocHeader.setAttribute('aria-expanded', !isCollapsed);
+                    if (isCollapsed) {
+                        tocContentWrapper.style.display = 'none';
+                        if (tocChevron) tocChevron.style.transform = 'rotate(-90deg)';
+                    } else {
+                        tocContentWrapper.style.display = 'block';
+                        if (tocChevron) tocChevron.style.transform = 'rotate(0deg)';
+                    }
+                });
+            }
 
             // Scrollspy highlight & auto-scroll for TOC
             const onScroll = () => {
@@ -1708,55 +2013,36 @@
             });
         });
 
-        // 4. RESPONSIVE MOBILE / DESKTOP LAYOUT ADAPTER
+        // 4. RESPONSIVE MOBILE / DESKTOP CONTENT-FIRST LAYOUT ADAPTER
         // Ensures strict ordering on mobile (< 992px):
-        // 1. Website Navbar
-        // 2. Featured Image
-        // 3. Blog Title
-        // 4. Author Name
-        // 5. Published Date
-        // 6. Reading Time
-        // 7. Total Views
-        // 8. Table of Contents
-        // 9. Share Article
-        // 10. Explore More
-        // 11. Main Blog Content
+        // 1. Website Navbar (in layout)
+        // 2. Breadcrumb Navigation (inside postHeader)
+        // 3. Blog Title (inside postHeader)
+        // 4. Short Article Excerpt (inside postHeader)
+        // 5. Author, Date, Reading Time, Views (inside postHeader)
+        // 6. Featured Blog Image (heroContainer)
+        // 7. Table of Contents (tocCard, immediately before article body)
+        // 8. Main Article Content (articleBody)
+        // 9. Share Article (shareCard, immediately after article body)
+        // 10. Author Biography (authorCard, after Share Article)
+        // 11. Related Articles (exploreCard, after Author Biography)
+        // 12. Footer (in layout)
         const postWrapper = document.querySelector('.wx-post-wrapper');
         const postHeader = document.querySelector('.wx-post-header');
         const heroContainer = document.querySelector('.wx-featured-hero-container');
         const postContainer = document.querySelector('.wx-post-container');
         const postMain = document.querySelector('.wx-post-main');
+        const authorCard = document.querySelector('.wx-author-card');
         const postSidebar = document.querySelector('.wx-post-sidebar');
+        const shareCard = document.querySelector('.wx-share-card');
+        const exploreCard = document.querySelector('.wx-explore-card');
         const layoutMediaQuery = window.matchMedia('(max-width: 991.98px)');
 
         function applyResponsiveLayout() {
-            if (!postWrapper || !postHeader || !postContainer || !postMain || !postSidebar) return;
+            if (!postWrapper || !postHeader || !postContainer || !postMain || !articleBody || !postSidebar) return;
 
             if (layoutMediaQuery.matches) {
-                // Mobile layout (< 992px):
-                // 1. Featured Image (heroContainer, if exists)
-                // 2. Blog Title & Metadata (postHeader)
-                // 3. Post Container (postSidebar before postMain)
-                if (heroContainer) {
-                    postWrapper.prepend(heroContainer);
-                    heroContainer.after(postHeader);
-                } else {
-                    postWrapper.prepend(postHeader);
-                }
-                postHeader.after(postContainer);
-
-                // Sidebar cards (8. TOC, 9. Share Article, 10. Explore More) appear before 11. Main Content
-                postContainer.prepend(postSidebar);
-                postSidebar.after(postMain);
-
-                if (tocCard) {
-                    postSidebar.prepend(tocCard);
-                }
-            } else {
-                // Desktop layout (>= 992px):
-                // 1. Blog Title & Metadata (postHeader)
-                // 2. Featured Image (heroContainer, if exists)
-                // 3. Two-column grid container (postMain on left, postSidebar on right)
+                // Mobile layout (< 992px) - Content-First:
                 postWrapper.prepend(postHeader);
                 if (heroContainer) {
                     postHeader.after(heroContainer);
@@ -1765,12 +2051,56 @@
                     postHeader.after(postContainer);
                 }
 
-                // In desktop, main content is in the left column, sticky sidebar on the right
+                // Place elements within postMain in exact content-first order
+                if (tocCard) {
+                    articleBody.before(tocCard);
+                }
+                if (shareCard) {
+                    articleBody.after(shareCard);
+                }
+                if (authorCard && shareCard) {
+                    shareCard.after(authorCard);
+                } else if (authorCard) {
+                    articleBody.after(authorCard);
+                }
+                if (exploreCard && authorCard) {
+                    authorCard.after(exploreCard);
+                } else if (exploreCard && shareCard) {
+                    shareCard.after(exploreCard);
+                } else if (exploreCard) {
+                    articleBody.after(exploreCard);
+                }
+
+                postSidebar.style.display = 'none';
+            } else {
+                // Desktop layout (>= 992px): Two-Column Layout with Sticky Sidebar
+                postWrapper.prepend(postHeader);
+                if (heroContainer) {
+                    postHeader.after(heroContainer);
+                    heroContainer.after(postContainer);
+                } else {
+                    postHeader.after(postContainer);
+                }
+
                 postContainer.prepend(postMain);
                 postMain.after(postSidebar);
+                postSidebar.style.display = '';
 
+                // Restore postMain elements: articleBody -> authorCard
+                postMain.appendChild(articleBody);
+                if (authorCard) {
+                    postMain.appendChild(authorCard);
+                }
+
+                // Restore postSidebar elements: tocCard -> shareCard -> exploreCard
                 if (tocCard) {
-                    postSidebar.prepend(tocCard);
+                    postSidebar.appendChild(tocCard);
+                }
+                if (shareCard) {
+                    postSidebar.appendChild(shareCard);
+                }
+                if (exploreCard) {
+                    postSidebar.appendChild(exploreCard);
                 }
             }
         }
