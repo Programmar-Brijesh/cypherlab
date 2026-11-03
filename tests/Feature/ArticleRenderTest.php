@@ -49,5 +49,35 @@ class ArticleRenderTest extends TestCase
         $response->assertSee('"@type": "Article"', false);
         $response->assertSee('Why Use QR Codes?');
     }
+
+    public function test_article_with_multiple_headings_renders_toc_elements(): void
+    {
+        $author = User::create([
+            'name' => 'Brijesh Verma',
+            'email' => 'brijesh2@example.com',
+            'password' => bcrypt('password'),
+            'is_admin' => true,
+        ]);
+
+        $post = BlogBuilderPost::create([
+            'user_id' => $author->id,
+            'title' => 'Long Multi-Heading Guide for Testing TOC',
+            'slug' => 'long-multi-heading-guide-for-testing-toc',
+            'html' => '<h2>What Is a QR Code Generator?</h2><p>Overview text.</p><h2>Key Features</h2><p>Feature details.</p><h2>How to Create a QR Code</h2><p>Step by step instructions.</p><h3>Custom Colors and Styling</h3><p>Styling details.</p><h2>Frequently Asked Questions</h2><p>FAQ answers.</p>',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $response = $this->get(route('article.show', $post->slug));
+
+        $response->assertStatus(200);
+        $response->assertSee('id="wx-toc-card"', false);
+        $response->assertSee('id="wx-toc-list"', false);
+        $response->assertSee('What Is a QR Code Generator?');
+        $response->assertSee('Key Features');
+        $response->assertSee('How to Create a QR Code');
+        $response->assertSee('Frequently Asked Questions');
+        $response->assertSee('scrollActiveTocItemIntoView', false);
+    }
 }
 

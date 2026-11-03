@@ -1445,7 +1445,77 @@
 
         if (headings.length > 0) {
             tocCard.style.display = 'block';
-            
+
+            let currentActiveId = null;
+            let isUserScrollingToc = false;
+            let userTocScrollTimeout = null;
+            let isClickNavigating = false;
+            let clickNavTimeout = null;
+
+            // Pause automatic TOC centering while the user is manually scrolling/touching the TOC
+            const markUserScrollingToc = () => {
+                isUserScrollingToc = true;
+                clearTimeout(userTocScrollTimeout);
+                userTocScrollTimeout = setTimeout(() => {
+                    isUserScrollingToc = false;
+                }, 1800);
+            };
+
+            tocList.addEventListener('wheel', markUserScrollingToc, { passive: true });
+            tocList.addEventListener('touchstart', markUserScrollingToc, { passive: true });
+            tocList.addEventListener('pointerdown', markUserScrollingToc, { passive: true });
+
+            const scrollActiveTocItemIntoView = (activeItem, force = false) => {
+                if (!activeItem || !tocList) return;
+                if (isUserScrollingToc && !force) return;
+
+                const itemTop = activeItem.offsetTop;
+                const itemHeight = activeItem.offsetHeight;
+                const listScrollTop = tocList.scrollTop;
+                const listHeight = tocList.clientHeight;
+
+                const itemRelativeTop = itemTop - listScrollTop;
+                const itemRelativeBottom = itemRelativeTop + itemHeight;
+
+                // Only scroll if outside the comfortable view area or forced (e.g. on click)
+                const padding = 24;
+                const isComfortablyVisible = itemRelativeTop >= padding && itemRelativeBottom <= (listHeight - padding);
+
+                if (!isComfortablyVisible || force) {
+                    const targetScrollTop = itemTop - (listHeight / 2) + (itemHeight / 2);
+                    const maxScroll = Math.max(0, tocList.scrollHeight - listHeight);
+                    const boundedScrollTop = Math.max(0, Math.min(targetScrollTop, maxScroll));
+
+                    tocList.scrollTo({
+                        top: boundedScrollTop,
+                        behavior: 'smooth'
+                    });
+                }
+            };
+
+            const updateActiveTocItem = (activeId, isClick = false) => {
+                if (activeId === currentActiveId && !isClick) {
+                    return;
+                }
+                currentActiveId = activeId;
+
+                let activeItem = null;
+                const tocItems = tocList.querySelectorAll('.wx-toc-item');
+                tocItems.forEach(item => {
+                    const link = item.querySelector('a');
+                    if (link && link.getAttribute('href') === '#' + activeId) {
+                        item.classList.add('active');
+                        activeItem = item;
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+
+                if (activeItem) {
+                    scrollActiveTocItemIntoView(activeItem, isClick);
+                }
+            };
+
             headings.forEach((heading, index) => {
                 if (!heading.id) {
                     heading.id = 'section-' + (index + 1);
@@ -1459,32 +1529,59 @@
                 a.textContent = heading.textContent;
                 a.addEventListener('click', function (e) {
                     e.preventDefault();
-                    heading.scrollIntoView({ behavior: 'smooth' });
+                    const target = document.getElementById(heading.id);
+                    if (!target) return;
+
+                    isClickNavigating = true;
+                    clearTimeout(clickNavTimeout);
+                    clickNavTimeout = setTimeout(() => {
+                        isClickNavigating = false;
+                    }, 800);
+
+                    updateActiveTocItem(heading.id, true);
+                    target.scrollIntoView({ behavior: 'smooth' });
+
+                    if (history.pushState) {
+                        history.pushState(null, '', '#' + heading.id);
+                    }
                 });
 
                 li.appendChild(a);
                 tocList.appendChild(li);
             });
 
-            // Scrollspy highlight for TOC
-            window.addEventListener('scroll', function () {
-                let current = '';
-                headings.forEach(heading => {
-                    const headingTop = heading.getBoundingClientRect().top;
-                    if (headingTop <= 120) {
-                        current = heading.id;
-                    }
-                });
+            // Scrollspy highlight & auto-scroll for TOC
+            const onScroll = () => {
+                if (isClickNavigating) return;
 
-                const tocItems = tocList.querySelectorAll('.wx-toc-item');
-                tocItems.forEach(item => {
-                    item.classList.remove('active');
-                    const link = item.querySelector('a');
-                    if (link && link.getAttribute('href') === '#' + current) {
-                        item.classList.add('active');
-                    }
-                });
-            });
+                let current = '';
+                const isBottom = (window.innerHeight + Math.round(window.scrollY)) >= (document.documentElement.scrollHeight - 60);
+
+                if (isBottom && headings.length > 0) {
+                    current = headings[headings.length - 1].id;
+                } else {
+                    headings.forEach(heading => {
+                        const headingTop = heading.getBoundingClientRect().top;
+                        if (headingTop <= 120) {
+                            current = heading.id;
+                        }
+                    });
+                }
+
+                updateActiveTocItem(current);
+            };
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            // Initial check on load or hash link
+            if (window.location.hash) {
+                const targetHash = window.location.hash.substring(1);
+                if (document.getElementById(targetHash)) {
+                    updateActiveTocItem(targetHash, true);
+                }
+            } else {
+                onScroll();
+            }
         }
 
         // 3. CODE BLOCK FORMATTING & COPY BUTTON
