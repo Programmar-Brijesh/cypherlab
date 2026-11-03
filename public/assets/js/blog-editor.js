@@ -708,11 +708,21 @@ window.submitPost = function (statusType) {
         },
         body: JSON.stringify(payload),
     })
-    .then((response) => response.json())
-    .then((data) => {
+    .then((response) => response.json().then((data) => ({ ok: response.ok, status: response.status, data })))
+    .then(({ ok, status, data }) => {
         if (btn) {
             btn.innerHTML = originalText;
             btn.disabled = false;
+        }
+
+        if (!ok) {
+            let errorMsg = data.message || "An error occurred while saving the post.";
+            if (data.errors) {
+                const errorDetails = Object.values(data.errors).flat().join("\n");
+                errorMsg += "\n\n" + errorDetails;
+            }
+            alert(errorMsg);
+            return;
         }
 
         if (data.post_id) {

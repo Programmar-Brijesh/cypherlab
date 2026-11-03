@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogBuilderPost;
+use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use App\Models\BlogPost;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class BlogpostController extends Controller
 {
@@ -29,6 +31,12 @@ class BlogpostController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'status' => 'required|in:draft,published',
+            'category_id' => [
+                'nullable',
+                Rule::exists('blog_categories', 'id'),
+            ],
+        ], [
+            'category_id.exists' => 'The selected category is invalid or no longer available.',
         ]);
 
         if ($request->filled('post_id')) {
@@ -63,7 +71,7 @@ class BlogpostController extends Controller
 
         $post->excerpt = $request->excerpt;
 
-        $post->category_id = $request->filled('category_id') ? $request->category_id : null;
+        $post->category_id = $request->filled('category_id') ? (int) $request->category_id : null;
 
         /*
     |--------------------------------------------------------------------------

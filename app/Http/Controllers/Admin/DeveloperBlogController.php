@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogBuilderPost;
+use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class DeveloperBlogController extends Controller
 {
@@ -15,13 +17,15 @@ class DeveloperBlogController extends Controller
         if ($request->has('post_id')) {
             $post = BlogBuilderPost::find($request->post_id);
         }
-        return view('admin.blog.editor', compact('post'));
+        $categories = BlogCategory::orderBy('name')->get();
+        return view('admin.blog.editor', compact('post', 'categories'));
     }
 
     public function edit($id)
     {
         $post = BlogBuilderPost::findOrFail($id);
-        return view('admin.blog.editor', compact('post'));
+        $categories = BlogCategory::orderBy('name')->get();
+        return view('admin.blog.editor', compact('post', 'categories'));
     }
 
     public function destroy($id)
@@ -39,6 +43,12 @@ class DeveloperBlogController extends Controller
             'html' => 'nullable|string',
             'css' => 'nullable|string',
             'js' => 'nullable|string',
+            'category_id' => [
+                'nullable',
+                Rule::exists('blog_categories', 'id'),
+            ],
+        ], [
+            'category_id.exists' => 'The selected category is invalid or no longer available.',
         ]);
 
         $postId = $request->filled('post_id') ? $request->post_id : null;
@@ -70,7 +80,7 @@ class DeveloperBlogController extends Controller
         $post->css = $request->css;
         $post->js = $request->js;
         $post->featured_image = $request->featured_image;
-        $post->category_id = $request->filled('category_id') ? $request->category_id : null;
+        $post->category_id = $request->filled('category_id') ? (int) $request->category_id : null;
         $post->seo_title = $request->seo_title;
         $post->meta_description = $request->meta_description;
         $post->keywords = $request->keywords;

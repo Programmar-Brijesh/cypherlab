@@ -399,9 +399,17 @@
                         <label><i class="fas fa-folder"></i> Category</label>
                         <select id="category_id" class="form-control">
                             <option value="">Select Category...</option>
-                            <option value="1">Web Development</option>
-                            <option value="2">UI/UX Design</option>
-                            <option value="3">Developer Tools</option>
+                            @php
+                                $categories = $categories ?? \App\Models\BlogCategory::orderBy('name')->get();
+                            @endphp
+                            @if(isset($post) && $post->category_id && !$categories->contains('id', $post->category_id))
+                                <option value="" disabled selected>(Previous category unavailable — please select)</option>
+                            @endif
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ (isset($post) && $post->category_id == $category->id) ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group">
@@ -470,7 +478,7 @@
             'css' => $post->css,
             'js' => $post->js,
             'featured_image' => $post->featured_image_url ?? $post->featured_image,
-            'category_id' => $post->category_id,
+            'category_id' => (isset($post) && $post->category_id && isset($categories) && $categories->contains('id', $post->category_id)) ? $post->category_id : null,
             'seo_title' => $post->seo_title,
             'meta_description' => $post->meta_description,
             'keywords' => $post->keywords,
