@@ -215,22 +215,21 @@
             gap: 32px;
             align-items: start;
         }
-
-        #wx-mobile-toc-slot {
-            display: none !important;
-        }
     }
 
     @media (max-width: 991.98px) {
         /* Mobile Layout Ordering (< 992px) - 100% Normal Document Flow:
            1. Website Navbar (in layout)
            2. Featured Hero Image
-           3. Table of Contents
-           4. Blog Title & Header
-           5. Blog Content
-           6. Author Information
-           7. Share Article
-           8. Explore More
+           3. Blog Title
+           4. Author Name
+           5. Published Date
+           6. Reading Time
+           7. Total Views
+           8. Table of Contents
+           9. Share Article
+           10. Explore More
+           11. Main Blog Content
         */
         .wx-post-wrapper {
             display: block;
@@ -242,22 +241,6 @@
             max-width: 960px;
             margin: 0 auto 20px auto;
             padding: 0 16px;
-            box-sizing: border-box;
-        }
-
-        #wx-mobile-toc-slot {
-            display: block;
-            width: 100%;
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 0 16px;
-            box-sizing: border-box;
-        }
-
-        #wx-mobile-toc-slot #wx-toc-card {
-            width: 100%;
-            margin-bottom: 24px;
-            position: static !important;
             box-sizing: border-box;
         }
 
@@ -279,6 +262,38 @@
             box-sizing: border-box;
         }
 
+        .wx-post-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: static !important;
+            top: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            overflow-y: visible !important;
+            overflow-x: visible !important;
+            padding-right: 0 !important;
+            width: 100% !important;
+            margin: 0 0 28px 0;
+            box-sizing: border-box;
+        }
+
+        .wx-sidebar-card {
+            position: static !important;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        #wx-toc-card {
+            position: static !important;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        .wx-toc-list {
+            max-height: 260px !important;
+        }
+
         .wx-post-main {
             display: block;
             width: 100%;
@@ -296,32 +311,6 @@
             width: 100%;
             margin: 32px auto 24px auto;
             box-sizing: border-box;
-        }
-
-        .wx-post-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            position: static !important;
-            top: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-            overflow-y: visible !important;
-            overflow-x: visible !important;
-            padding-right: 0 !important;
-            width: 100% !important;
-            margin-top: 24px;
-            box-sizing: border-box;
-        }
-
-        .wx-sidebar-card {
-            position: static !important;
-            width: 100% !important;
-            box-sizing: border-box;
-        }
-
-        .wx-toc-list {
-            max-height: 260px !important;
         }
     }
 
@@ -1447,9 +1436,6 @@
     </div>
     @endif
 
-    <!-- MOBILE TOC SLOT (Target container for TOC on screens < 992px) -->
-    <div id="wx-mobile-toc-slot"></div>
-
     <!-- GRID CONTAINER -->
     <div class="wx-post-container">
         
@@ -1726,47 +1712,51 @@
         // Ensures strict ordering on mobile (< 992px):
         // 1. Website Navbar
         // 2. Featured Image
-        // 3. Table of Contents (TOC)
-        // 4. Blog Title and Meta
-        // 5. Blog Content
-        // 6. Author Information
-        // 7. Share Article
-        // 8. Explore More
+        // 3. Blog Title
+        // 4. Author Name
+        // 5. Published Date
+        // 6. Reading Time
+        // 7. Total Views
+        // 8. Table of Contents
+        // 9. Share Article
+        // 10. Explore More
+        // 11. Main Blog Content
         const postWrapper = document.querySelector('.wx-post-wrapper');
         const postHeader = document.querySelector('.wx-post-header');
         const heroContainer = document.querySelector('.wx-featured-hero-container');
         const postContainer = document.querySelector('.wx-post-container');
+        const postMain = document.querySelector('.wx-post-main');
         const postSidebar = document.querySelector('.wx-post-sidebar');
-        const mobileTocSlot = document.getElementById('wx-mobile-toc-slot');
         const layoutMediaQuery = window.matchMedia('(max-width: 991.98px)');
 
         function applyResponsiveLayout() {
-            if (!postWrapper || !postHeader || !postContainer || !postSidebar) return;
+            if (!postWrapper || !postHeader || !postContainer || !postMain || !postSidebar) return;
 
             if (layoutMediaQuery.matches) {
-                // Mobile layout (< 992px)
+                // Mobile layout (< 992px):
+                // 1. Featured Image (heroContainer, if exists)
+                // 2. Blog Title & Metadata (postHeader)
+                // 3. Post Container (postSidebar before postMain)
                 if (heroContainer) {
                     postWrapper.prepend(heroContainer);
-                    if (mobileTocSlot) heroContainer.after(mobileTocSlot);
-                } else if (mobileTocSlot) {
-                    postWrapper.prepend(mobileTocSlot);
+                    heroContainer.after(postHeader);
+                } else {
+                    postWrapper.prepend(postHeader);
                 }
-
-                if (mobileTocSlot && tocCard) {
-                    if (headings.length > 0) {
-                        mobileTocSlot.appendChild(tocCard);
-                        mobileTocSlot.style.display = 'block';
-                    } else {
-                        mobileTocSlot.style.display = 'none';
-                    }
-                    mobileTocSlot.after(postHeader);
-                } else if (mobileTocSlot) {
-                    mobileTocSlot.after(postHeader);
-                }
-
                 postHeader.after(postContainer);
+
+                // Sidebar cards (8. TOC, 9. Share Article, 10. Explore More) appear before 11. Main Content
+                postContainer.prepend(postSidebar);
+                postSidebar.after(postMain);
+
+                if (tocCard) {
+                    postSidebar.prepend(tocCard);
+                }
             } else {
-                // Desktop layout (>= 992px)
+                // Desktop layout (>= 992px):
+                // 1. Blog Title & Metadata (postHeader)
+                // 2. Featured Image (heroContainer, if exists)
+                // 3. Two-column grid container (postMain on left, postSidebar on right)
                 postWrapper.prepend(postHeader);
                 if (heroContainer) {
                     postHeader.after(heroContainer);
@@ -1774,6 +1764,10 @@
                 } else {
                     postHeader.after(postContainer);
                 }
+
+                // In desktop, main content is in the left column, sticky sidebar on the right
+                postContainer.prepend(postMain);
+                postMain.after(postSidebar);
 
                 if (tocCard) {
                     postSidebar.prepend(tocCard);
