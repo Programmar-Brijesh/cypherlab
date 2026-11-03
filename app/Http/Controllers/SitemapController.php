@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Route;
 use App\Models\BlogBuilderPost;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class SitemapController extends Controller
 {
+    /**
+     * Generate dynamic XML sitemap conforming to Sitemaps.org 0.9 schema.
+     */
     public function index(): Response
     {
         $urls = [];
+        $addedLocations = [];
         $nowIso = now()->toIso8601String();
 
         // 1. Core Platform & Static Pages
@@ -25,12 +31,16 @@ class SitemapController extends Controller
 
         foreach ($staticRoutes as $item) {
             if (Route::has($item['route'])) {
-                $urls[] = [
-                    'loc' => route($item['route']),
-                    'lastmod' => $nowIso,
-                    'changefreq' => $item['changefreq'],
-                    'priority' => $item['priority'],
-                ];
+                $loc = $this->resolveCanonicalUrl(route($item['route']));
+                if (!isset($addedLocations[$loc])) {
+                    $urls[] = [
+                        'loc' => $loc,
+                        'lastmod' => $nowIso,
+                        'changefreq' => $item['changefreq'],
+                        'priority' => $item['priority'],
+                    ];
+                    $addedLocations[$loc] = true;
+                }
             }
         }
 
@@ -50,16 +60,15 @@ class SitemapController extends Controller
 
         foreach ($pdfRoutes as $pdfRoute) {
             if (Route::has($pdfRoute)) {
-                $loc = route($pdfRoute);
-                // Prevent duplicate entries if pdf.landing and pdf.tools resolve to same URL
-                $alreadyAdded = array_filter($urls, fn($u) => $u['loc'] === $loc);
-                if (empty($alreadyAdded)) {
+                $loc = $this->resolveCanonicalUrl(route($pdfRoute));
+                if (!isset($addedLocations[$loc])) {
                     $urls[] = [
                         'loc' => $loc,
                         'lastmod' => $nowIso,
                         'changefreq' => 'weekly',
                         'priority' => '0.8',
                     ];
+                    $addedLocations[$loc] = true;
                 }
             }
         }
@@ -69,59 +78,75 @@ class SitemapController extends Controller
         foreach ($tools as $tool) {
             $routeName = $tool['route_name'] ?? null;
             if ($routeName && Route::has($routeName)) {
-                $loc = route($routeName);
-                $alreadyAdded = array_filter($urls, fn($u) => $u['loc'] === $loc);
-                if (empty($alreadyAdded)) {
+                $loc = $this->resolveCanonicalUrl(route($routeName));
+                if (!isset($addedLocations[$loc])) {
                     $urls[] = [
                         'loc' => $loc,
                         'lastmod' => $nowIso,
                         'changefreq' => 'weekly',
                         'priority' => '0.9',
                     ];
+                    $addedLocations[$loc] = true;
                 }
             }
         }
 
-        // 4. Published Blog Posts (Dynamic from DB)
+        // 4. Published Blog Posts (Dynamic from database)
         try {
             $posts = BlogBuilderPost::where('status', 'published')
-                ->orderBy('published_at', 'desc')
+                ->whereNull('deleted_at')
+                ->whereNotNull('slug')
+                ->where('slug', '!=', '')
+                ->where(function ($q) {
+                    $q->whereNull('published_at')->orWhere('published_at', '<=', now());
+                })
+                ->orderByDesc('published_at')
+                ->orderByDesc('created_at')
+                ->select(['id', 'slug', 'canonical_url', 'published_at', 'updated_at', 'created_at'])
                 ->get();
 
             foreach ($posts as $post) {
-                if ($post->slug && Route::has('blog.show')) {
+                // Canonical URL logic matching show.blade.php: $post->canonical_url ?: route('blog.show', $post->slug)
+                $canonical = !empty($post->canonical_url)
+                    ? $post->canonical_url
+                    : route('blog.show', $post->slug);
+
+                $loc = $this->resolveCanonicalUrl($canonical);
+
+                if (!isset($addedLocations[$loc])) {
+                    $timestamp = $post->updated_at ?? $post->published_at ?? $post->created_at ?? now();
+
                     $urls[] = [
-                        'loc' => route('blog.show', $post->slug),
-                        'lastmod' => ($post->updated_at ?? $post->published_at ?? now())->toIso8601String(),
+                        'loc' => $loc,
+                        'lastmod' => $timestamp->toIso8601String(),
                         'changefreq' => 'weekly',
                         'priority' => '0.8',
                     ];
+                    $addedLocations[$loc] = true;
                 }
             }
         } catch (\Throwable $e) {
-            // Log fallback error if blog table is missing or DB issue occurs
-            \Illuminate\Support\Facades\Log::error("Sitemap post fetch error: " . $e->getMessage());
+            Log::error('Sitemap blog post retrieval error: ' . $e->getMessage());
         }
 
-        // Build XML Output strictly adhering to sitemaps.org 0.9 schema
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n";
-        $xml .= '        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n";
-        $xml .= '        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n";
-
-        foreach ($urls as $url) {
-            $xml .= '  <url>' . "\n";
-            $xml .= '    <loc>' . e($url['loc']) . '</loc>' . "\n";
-            $xml .= '    <lastmod>' . e($url['lastmod']) . '</lastmod>' . "\n";
-            $xml .= '    <changefreq>' . e($url['changefreq']) . '</changefreq>' . "\n";
-            $xml .= '    <priority>' . e($url['priority']) . '</priority>' . "\n";
-            $xml .= '  </url>' . "\n";
-        }
-
-        $xml .= '</urlset>';
-
-        return response($xml, 200, [
-            'Content-Type' => 'application/xml; charset=utf-8',
+        return response()->view('sitemap', compact('urls'), 200, [
+            'Content-Type' => 'application/xml; charset=UTF-8',
         ]);
+    }
+
+    /**
+     * Resolve canonical URL using the canonical domain in production.
+     */
+    protected function resolveCanonicalUrl(string $url): string
+    {
+        // In production, ensure absolute URL begins with canonical domain https://cypherlab.in
+        if (app()->environment('production') || str_contains((string) config('app.url'), 'cypherlab.in')) {
+            $parsed = parse_url($url);
+            $path = $parsed['path'] ?? '/';
+            $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+            return 'https://cypherlab.in' . $path . $query;
+        }
+
+        return $url;
     }
 }

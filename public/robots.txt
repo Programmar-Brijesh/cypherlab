@@ -19,4 +19,4 @@ Allow: /assets/
 Allow: /uploads/
 Allow: /build/
 
-Sitemap: https://cypherlabs.in/sitemap.xml
+Sitemap: https://cypherlab.in/sitemap.xml
