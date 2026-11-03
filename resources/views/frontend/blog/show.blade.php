@@ -90,7 +90,7 @@
         padding-top: 28px;
         padding-bottom: 60px;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        overflow-x: hidden;
+        overflow-x: clip;
     }
 
     /* COMPACT HEADER SECTION */
@@ -216,6 +216,18 @@
             grid-template-columns: 1fr;
             gap: 32px;
         }
+
+        .wx-post-sidebar {
+            position: static !important;
+            top: auto !important;
+            max-height: none !important;
+            overflow-y: visible !important;
+            padding-right: 0 !important;
+        }
+
+        .wx-toc-list {
+            max-height: 280px !important;
+        }
     }
 
     /* MAIN CONTENT BODY */
@@ -271,7 +283,7 @@
         margin-top: 1.8rem;
         margin-bottom: 0.85rem;
         letter-spacing: -0.012em;
-        scroll-margin-top: 80px;
+        scroll-margin-top: 90px;
     }
 
     .wx-post-body h1 { font-size: clamp(22px, 2.8vw, 30px); border-bottom: 1px solid var(--wx-border-color); padding-bottom: 8px; }
@@ -1077,10 +1089,34 @@
     /* COMPACT SIDEBAR */
     .wx-post-sidebar {
         position: sticky;
-        top: 80px;
+        top: 90px;
+        align-self: start;
         display: flex;
         flex-direction: column;
         gap: 16px;
+        max-height: calc(100vh - 105px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 212, 255, 0.3) transparent;
+    }
+
+    .wx-post-sidebar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .wx-post-sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .wx-post-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(0, 212, 255, 0.25);
+        border-radius: 4px;
+    }
+
+    .wx-post-sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 212, 255, 0.5);
     }
 
     .wx-sidebar-card {
@@ -1111,9 +1147,29 @@
         margin: 0;
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        max-height: 320px;
+        gap: 6px;
+        max-height: min(40vh, 320px);
         overflow-y: auto;
+        padding-right: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(0, 212, 255, 0.3) transparent;
+    }
+
+    .wx-toc-list::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .wx-toc-list::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .wx-toc-list::-webkit-scrollbar-thumb {
+        background: rgba(0, 212, 255, 0.25);
+        border-radius: 4px;
+    }
+
+    .wx-toc-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 212, 255, 0.5);
     }
 
     .wx-toc-item a {
