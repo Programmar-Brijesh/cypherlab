@@ -212,21 +212,92 @@
     }
 
     @media (max-width: 992px) {
+        /* Mobile Layout Ordering (< 992px):
+           1. Website Navbar (in layout)
+           2. Featured Hero Image (order: 1)
+           3. Table of Contents (order: 2)
+           4. Blog Title & Header (order: 3)
+           5. Blog Content (order: 4)
+           6. Author Information (order: 5)
+           7. Share Article (order: 6)
+           8. Explore More (order: 7)
+        */
+        .wx-post-wrapper {
+            display: flex;
+            flex-direction: column;
+            padding-top: 16px;
+        }
+
+        .wx-featured-hero-container {
+            order: 1;
+            margin: 0 auto 20px auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         .wx-post-container {
-            grid-template-columns: 1fr;
-            gap: 32px;
+            display: contents;
         }
 
         .wx-post-sidebar {
-            position: static !important;
-            top: auto !important;
-            max-height: none !important;
-            overflow-y: visible !important;
-            padding-right: 0 !important;
+            display: contents;
+        }
+
+        #wx-toc-card {
+            order: 2;
+            width: calc(100% - 32px);
+            max-width: 960px;
+            margin: 0 auto 24px auto;
+            box-sizing: border-box;
+        }
+
+        .wx-post-header {
+            order: 3;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto 24px auto;
+            box-sizing: border-box;
+        }
+
+        .wx-post-main {
+            display: contents;
+        }
+
+        .wx-post-body {
+            order: 4;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 16px;
+            box-sizing: border-box;
+        }
+
+        .wx-author-card {
+            order: 5;
+            width: calc(100% - 32px);
+            max-width: 960px;
+            margin: 32px auto 20px auto;
+            box-sizing: border-box;
+        }
+
+        .wx-share-card {
+            order: 6;
+            width: calc(100% - 32px);
+            max-width: 960px;
+            margin: 0 auto 20px auto;
+            box-sizing: border-box;
+        }
+
+        .wx-explore-card {
+            order: 7;
+            width: calc(100% - 32px);
+            max-width: 960px;
+            margin: 0 auto 24px auto;
+            box-sizing: border-box;
         }
 
         .wx-toc-list {
-            max-height: 280px !important;
+            max-height: 260px !important;
         }
     }
 
@@ -1380,7 +1451,7 @@
             </div>
 
             <!-- SHARE CARD -->
-            <div class="wx-sidebar-card">
+            <div class="wx-sidebar-card wx-share-card">
                 <div class="wx-sidebar-title">
                     <i class="fas fa-share-alt"></i> Share Article
                 </div>
@@ -1401,7 +1472,7 @@
             </div>
 
             <!-- QUICK NAVIGATION CARD -->
-            <div class="wx-sidebar-card">
+            <div class="wx-sidebar-card wx-explore-card">
                 <div class="wx-sidebar-title">
                     <i class="fas fa-compass"></i> Explore More
                 </div>
