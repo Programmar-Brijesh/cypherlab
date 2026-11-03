@@ -6,6 +6,7 @@ use App\Http\Controllers\PdfToolController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\Admin\DeveloperBlogController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Frontend\BlogpostController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ContactController;
@@ -52,6 +53,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin/blog')->group(function () {
     Route::post('/save', [BlogpostController::class, 'save'])->name('admin.blog.save');
     Route::post('/store', [BlogController::class, 'store'])->name('blog.store');
     Route::post('/upload-image', [DeveloperBlogController::class, 'uploadImage'])->name('admin.blog.upload_image');
+});
+
+// Admin Category Management
+Route::middleware(['auth', 'admin'])->prefix('admin/categories')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('admin.categories.index');
+    Route::post('/', [CategoryController::class, 'store'])->name('admin.categories.store');
+    Route::put('/{id}', [CategoryController::class, 'update'])->name('admin.categories.update');
+    Route::delete('/{id}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
 });
 
 Route::get('/articles', [BlogpostController::class, 'index'])->name('article.index');

@@ -526,9 +526,14 @@
                             <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Total Views</div>
                         </div>
                     </div>
-                    <a href="{{ route('admin.blog.create') }}" class="saas-btn saas-btn-primary" style="width: 100%; justify-content: center;">
-                        <i class="fas fa-plus-circle"></i> Create New Blog Post
-                    </a>
+                    <div style="display:flex; gap: 10px; margin-top: 0.25rem;">
+                        <a href="{{ route('admin.blog.create') }}" class="saas-btn saas-btn-primary" style="flex:1; justify-content: center;">
+                            <i class="fas fa-plus-circle"></i> Create Post
+                        </a>
+                        <a href="{{ route('admin.categories.index') }}" class="saas-btn saas-btn-glass" style="flex:1; justify-content: center;">
+                            <i class="fas fa-folder-tree"></i> Manage Categories
+                        </a>
+                    </div>
                 </div>
 
                 <!-- ADMIN ACCOUNT CARD -->
@@ -564,9 +569,14 @@
                         <div class="card-head-icon"><i class="fas fa-file-code"></i></div>
                         <h3 class="card-head-title">Manage Published Articles & Drafts</h3>
                     </div>
-                    <a href="{{ route('admin.blog.create') }}" class="saas-btn saas-btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.78rem;">
-                        <i class="fas fa-plus"></i> New Post
-                    </a>
+                    <div style="display:flex; gap: 8px;">
+                        <a href="{{ route('admin.categories.index') }}" class="saas-btn saas-btn-glass" style="padding: 0.4rem 0.85rem; font-size: 0.78rem;">
+                            <i class="fas fa-folder-tree"></i> Categories
+                        </a>
+                        <a href="{{ route('admin.blog.create') }}" class="saas-btn saas-btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.78rem;">
+                            <i class="fas fa-plus"></i> New Post
+                        </a>
+                    </div>
                 </div>
 
                 @if(isset($posts) && count($posts) > 0)

@@ -42,6 +42,11 @@
                         <i class="fas fa-plus-circle me-1"></i> Create Post
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ Str::startsWith($currentPath, 'admin/categories') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
+                        <i class="fas fa-folder-tree me-1"></i> Manage Categories
+                    </a>
+                </li>
                 @endif
             </ul>
 

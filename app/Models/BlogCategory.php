@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BlogCategory extends Model
 {
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name', 'slug', 'description'];
 
     public function posts()
     {
@@ -16,5 +16,10 @@ class BlogCategory extends Model
     public function builderPosts()
     {
         return $this->hasMany(BlogBuilderPost::class, 'category_id');
+    }
+
+    public function publishedBuilderPosts()
+    {
+        return $this->hasMany(BlogBuilderPost::class, 'category_id')->where('status', 'published');
     }
 }
