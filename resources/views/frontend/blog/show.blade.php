@@ -9,7 +9,7 @@
 @push('schema')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
+  "@@context": "https://schema.org",
   "@type": "{{ $post->schema_type ?? 'Article' }}",
   "headline": "{{ e($post->seo_title ?: $post->title) }}",
   "description": "{{ e($post->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($post->html), 160)) }}",
