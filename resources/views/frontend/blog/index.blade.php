@@ -524,6 +524,7 @@
                     <div class="author-left">
                         <div class="mini-author-avatar"><i class="fas fa-terminal"></i></div>
                         <span>{{ $featured->published_at ? $featured->published_at->format('M d') : $featured->created_at->format('M d') }}</span>
+                        <span class="ms-2 text-white-50" style="font-size: 0.78rem;"><i class="far fa-eye me-1"></i>{{ number_format($featured->views) }}</span>
                     </div>
                     <a href="{{ route('article.show', $featured->slug) }}" class="featured-read-btn">
                         <span>Read</span> <i class="fas fa-arrow-right"></i>
@@ -568,6 +569,7 @@
                     <div class="author-left">
                         <div class="mini-author-avatar"><i class="fas fa-code"></i></div>
                         <span>{{ $post->published_at ? $post->published_at->format('M d') : $post->created_at->format('M d') }}</span>
+                        <span class="ms-2 text-white-50" style="font-size: 0.78rem;"><i class="far fa-eye me-1"></i>{{ number_format($post->views) }}</span>
                     </div>
                     <a href="{{ route('article.show', $post->slug) }}" class="blog-card-action-btn">
                         <span>Read</span> <i class="fas fa-arrow-right"></i>

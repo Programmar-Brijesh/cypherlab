@@ -7,11 +7,16 @@ use App\Models\BlogBuilderPost;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
 use App\Models\BlogPost;
+use App\Services\BlogViewService;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class BlogpostController extends Controller
 {
+    public function __construct(
+        protected BlogViewService $viewService
+    ) {}
+
     public function index()
     {
         // Sirf published posts nikalenge, latest pehle dikhayenge, aur pagination lagayenge
@@ -155,11 +160,13 @@ class BlogpostController extends Controller
         ]);
     }
 
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
         $post = BlogBuilderPost::where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
+
+        $this->viewService->recordView($post, $request);
 
         return view('frontend.blog.show', compact('post'));
     }

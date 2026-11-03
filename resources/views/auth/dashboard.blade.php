@@ -508,18 +508,22 @@
                         <div class="card-head-icon"><i class="fas fa-chart-line"></i></div>
                         <h3 class="card-head-title">CMS Publishing Overview</h3>
                     </div>
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align:center; margin-bottom: 1.25rem;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.85rem; text-align:center; margin-bottom: 1.25rem;">
                         <div style="background: rgba(15, 23, 42, 0.6); padding: 0.85rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 1.5rem; font-weight: 800; color: #ffffff;">{{ $postCount ?? 0 }}</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: #ffffff;">{{ $postCount ?? 0 }}</div>
                             <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Total Articles</div>
                         </div>
                         <div style="background: rgba(15, 23, 42, 0.6); padding: 0.85rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--neon-cyan);">{{ $publishedCount ?? 0 }}</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: var(--neon-cyan);">{{ $publishedCount ?? 0 }}</div>
                             <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Published</div>
                         </div>
                         <div style="background: rgba(15, 23, 42, 0.6); padding: 0.85rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
-                            <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-muted);">{{ $draftCount ?? 0 }}</div>
+                            <div style="font-size: 1.4rem; font-weight: 800; color: var(--text-muted);">{{ $draftCount ?? 0 }}</div>
                             <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Drafts</div>
+                        </div>
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 0.85rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                            <div style="font-size: 1.4rem; font-weight: 800; color: var(--neon-blue);">{{ number_format($totalViews ?? 0) }}</div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Total Views</div>
                         </div>
                     </div>
                     <a href="{{ route('admin.blog.create') }}" class="saas-btn saas-btn-primary" style="width: 100%; justify-content: center;">
@@ -572,6 +576,7 @@
                                 <tr>
                                     <th>Article Title</th>
                                     <th>Status</th>
+                                    <th>Views</th>
                                     <th>Date Created</th>
                                     <th style="text-align:right;">CRUD Actions</th>
                                 </tr>
@@ -586,6 +591,9 @@
                                         @else
                                             <span class="status-pill-draft">Draft</span>
                                         @endif
+                                    </td>
+                                    <td style="color: var(--neon-cyan); font-family: 'Fira Code', monospace; font-size: 0.85rem;">
+                                        <i class="far fa-eye me-1"></i> {{ number_format($post->views) }}
                                     </td>
                                     <td>{{ $post->created_at ? $post->created_at->format('M d, Y') : '—' }}</td>
                                     <td style="text-align:right;">

@@ -188,9 +188,10 @@ class AuthController extends Controller
         $postCount = (clone $query)->count();
         $publishedCount = (clone $query)->where('status', 'published')->count();
         $draftCount = (clone $query)->where('status', 'draft')->count();
+        $totalViews = (clone $query)->sum('views');
         $posts = (clone $query)->latest()->get();
 
-        return view('auth.dashboard', compact('user', 'posts', 'postCount', 'publishedCount', 'draftCount'));
+        return view('auth.dashboard', compact('user', 'posts', 'postCount', 'publishedCount', 'draftCount', 'totalViews'));
     }
 
     public function editProfile()
