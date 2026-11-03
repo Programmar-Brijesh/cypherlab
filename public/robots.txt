@@ -1,0 +1,22 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /registerUser
+Disallow: /verify/
+Disallow: /verify-otp
+Disallow: /edit-profile
+Disallow: /update-profile
+Disallow: /delete-account
+Disallow: /logout
+Disallow: /check-email
+Disallow: /resend-otp
+Disallow: /storage/*.key
+
+# Allow CSS/JS/Assets for proper rendering
+Allow: /assets/
+Allow: /uploads/
+Allow: /build/
+
+Sitemap: https://cypherlabs.in/sitemap.xml

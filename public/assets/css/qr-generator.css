@@ -1,0 +1,135 @@
+/* qr-generator.css */
+
+.qr-page .tool-box {
+    min-height: 100%;
+}
+
+.custom-label {
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    font-family: "Fira Code", monospace;
+}
+
+.custom-input {
+    width: 100%;
+    background: rgba(15,20,37,.9);
+    border: 1px solid rgba(0,212,255,.2);
+    border-radius: 18px;
+    padding: 14px 18px;
+    color: #fff;
+    transition: .3s ease;
+    font-size: .95rem;
+}
+
+.custom-input:focus {
+    outline: none;
+    border-color: var(--neon-blue);
+    box-shadow:
+        0 0 0 3px rgba(0,212,255,.15),
+        var(--shadow-glow);
+}
+
+.color-picker {
+    width: 100%;
+    height: 55px;
+    border: none;
+    border-radius: 16px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.qr-preview-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.qr-preview-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 450px;
+    border-radius: 24px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0,212,255,.08),
+            transparent 70%
+        );
+    border: 1px dashed rgba(0,212,255,.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.qr-preview-wrapper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(
+            180deg,
+            transparent,
+            rgba(0,212,255,.05),
+            transparent
+        );
+    animation: scanner 4s linear infinite;
+}
+
+@keyframes scanner {
+
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+#qrContainer {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+    border-radius: 24px;
+    background: rgba(255,255,255,.02);
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 0 30px rgba(0,212,255,.15);
+}
+
+.download-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.faq-question {
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.faq-answer {
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.7;
+}
+
+@media(max-width:768px)
+{
+    .qr-preview-wrapper {
+        min-height: 320px;
+    }
+
+    .download-actions {
+        flex-direction: column;
+    }
+
+    .download-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,298 @@
+:root {
+    --bg-color: #0b1120;
+    --glass-bg: rgba(30, 41, 59, 0.5);
+    --border-color: rgba(0, 212, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --neon-blue: #00d4ff;
+    --neon-purple: #a855f7;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body.weblixo-dark-theme {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-family: "Inter", sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Topbar */
+.editor-topbar {
+    height: 60px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 60%;
+}
+.back-btn {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 18px;
+    transition: 0.3s;
+}
+.back-btn:hover {
+    color: var(--neon-blue);
+}
+.title-input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 600;
+    width: 100%;
+    outline: none;
+}
+.save-status {
+    font-size: 12px;
+    color: #10b981;
+    white-space: nowrap;
+}
+
+.btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    transition: 0.3s;
+}
+.btn-primary {
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+    color: white;
+}
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    margin-right: 10px;
+}
+
+/* Workspace & Split.js */
+.workspace {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 125px);
+    width: 100vw;
+}
+.panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+.glass-panel {
+    background: var(--glass-bg);
+}
+.panel-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* Split.js Gutter Styling */
+.gutter {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    cursor: col-resize;
+    position: relative;
+}
+.gutter::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: var(--border-color);
+    transform: translateX(-50%);
+    transition: 0.3s;
+}
+.gutter:hover::after,
+.gutter.gutter-dragging::after {
+    background: var(--neon-blue);
+    width: 4px;
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+/* Components Left Panel */
+.components-list {
+    padding: 15px;
+    overflow-y: auto;
+}
+.component-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.component-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+.btn-insert {
+    background: rgba(0, 212, 255, 0.1);
+    border: none;
+    color: var(--neon-blue);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-insert:hover {
+    background: var(--neon-blue);
+    color: #000;
+}
+
+/* Editor Tabs */
+.editor-tabs {
+    display: flex;
+    background: #1e1e1e;
+    border-bottom: 1px solid #333;
+}
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 13px;
+    border-top: 2px solid transparent;
+}
+.tab-btn.active {
+    color: var(--text-primary);
+    background: #1e1e1e;
+    border-top-color: var(--neon-blue);
+    border-right: 1px solid #333;
+}
+.monaco-container {
+    flex-grow: 1;
+    display: none;
+}
+.monaco-container.active {
+    display: block;
+}
+.text-orange {
+    color: #f97316;
+}
+.text-blue {
+    color: #3b82f6;
+}
+.text-yellow {
+    color: #eab308;
+}
+
+/* Live Preview */
+.preview-wrapper {
+    flex-grow: 1;
+    padding: 0;
+    background: #fff;
+} /* White bg so you can see your normal frontend */
+#live-preview-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Sidebar Tabs */
+.sidebar-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
+}
+.side-tab-btn {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+    border-bottom: 2px solid transparent;
+}
+.side-tab-btn:hover {
+    color: var(--text-primary);
+}
+.side-tab-btn.active {
+    color: var(--neon-blue);
+    border-bottom: 2px solid var(--neon-blue);
+}
+
+/* Sidebar Content Visibility */
+.sidebar-content {
+    display: none;
+    height: calc(100% - 43px);
+    overflow-y: auto;
+}
+.sidebar-content.active {
+    display: block;
+}
+
+/* SEO Form Styles */
+.seo-form {
+    padding: 15px;
+}
+.form-group {
+    margin-bottom: 18px;
+}
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.form-group label i {
+    margin-right: 5px;
+    color: var(--neon-purple);
+}
+
+.form-control {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: "Inter", sans-serif;
+    transition: 0.3s ease;
+    outline: none;
+}
+.form-control:focus {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+}
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
