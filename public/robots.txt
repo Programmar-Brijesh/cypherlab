@@ -13,6 +13,15 @@ Disallow: /logout
 Disallow: /check-email
 Disallow: /resend-otp
 Disallow: /storage/*.key
+Disallow: /ocr/upload
+Disallow: /ocr/process
+Disallow: /pdf-split/process
+Disallow: /pdf-split/upload
+Disallow: /pdf-split/download-zip
+Disallow: /pdf-compress/download
+Disallow: /pdf-compress/upload
+Disallow: /cdn-cgi/l/email-protection
+Disallow: /pages/contact
 
 # Allow CSS/JS/Assets for proper rendering
 Allow: /assets/
