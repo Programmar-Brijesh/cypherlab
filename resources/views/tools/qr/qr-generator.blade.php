@@ -446,10 +446,10 @@
                 </div>
 
                 <div class="preset-pills-row">
-                    <span class="preset-pill active" onclick="setPreset('https://cypherlabs.in')">URL</span>
-                    <span class="preset-pill" onclick="setPreset('WIFI:S:MyNetwork;P:SecretPassword;;')">Wi-Fi</span>
-                    <span class="preset-pill" onclick="setPreset('BEGIN:VCARD\nVERSION:3.0\nN:Doe;John\nTEL:+123456789\nEND:VCARD')">vCard</span>
-                    <span class="preset-pill" onclick="setPreset('mailto:contact@cypherlabs.in')">Email</span>
+                    <span class="preset-pill active" onclick="setPreset('https://cypherlabs.in', this)">URL</span>
+                    <span class="preset-pill" onclick="setPreset('WIFI:S:MyNetwork;P:SecretPassword;;', this)">Wi-Fi</span>
+                    <span class="preset-pill" onclick="setPreset('BEGIN:VCARD\nVERSION:3.0\nN:Doe;John\nTEL:+123456789\nEND:VCARD', this)">vCard</span>
+                    <span class="preset-pill" onclick="setPreset('mailto:contact@cypherlabs.in', this)">Email</span>
                 </div>
 
                 <div class="qr-field-group">
@@ -552,50 +552,6 @@
 
 <div class="qr-toast-container" id="toastContainer"></div>
 
-@endsection
-
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
-<script>
-    let qrInstance = null;
-
-    function showToast(msg) {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = 'qr-toast';
-        toast.innerHTML = `<i class="fas fa-check-circle me-1" style="color:var(--neon-blue);"></i> ${msg}`;
-        container.appendChild(toast);
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s';
-            setTimeout(() => toast.remove(), 300);
-        }, 2500);
-    }
-
-    function updateCharCount() {
-        const val = document.getElementById('qrText').value;
-        document.getElementById('charCounter').textContent = `${val.length} chars`;
-    }
-
-    function updateHexLabel(type) {
-        if (type === 'dark') {
-            document.getElementById('hexDark').textContent = document.getElementById('qrDark').value;
-        } else {
-            document.getElementById('hexLight').textContent = document.getElementById('qrLight').value;
-        }
-    }
-
-    function setPreset(text) {
-        document.querySelectorAll('.preset-pill').forEach(el => el.classList.remove('active'));
-        if (event && event.currentTarget) {
-            event.currentTarget.classList.add('active');
-        }
-        document.getElementById('qrText').value = text;
-        updateCharCount();
-        generateQR();
-    }
-</script>
-
 <!-- SEO Content & Technical Guide Section -->
 <div class="container py-5">
     <div class="card bg-dark border-secondary p-4 p-md-5 rounded-4 shadow text-white">
@@ -668,54 +624,192 @@
     </div>
 </div>
 
-    document.addEventListener("DOMContentLoaded", () => {
+@endsection
+
+@section('scripts')
+<script src="{{ asset('assets/js/qrcode.min.js') }}"></script>
+<script>
+    if (typeof QRCode === 'undefined') {
+        document.write('<script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"><\/script>');
+    }
+</script>
+<script>
+    let qrInstance = null;
+
+    function showToast(msg) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'qr-toast';
+        toast.innerHTML = `<i class="fas fa-check-circle me-1" style="color:var(--neon-blue);"></i> ${msg}`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
+    function updateCharCount() {
+        const input = document.getElementById('qrText');
+        const counter = document.getElementById('charCounter');
+        if (input && counter) {
+            counter.textContent = `${input.value.length} chars`;
+        }
+    }
+
+    function updateHexLabel(type) {
+        if (type === 'dark') {
+            const dark = document.getElementById('qrDark');
+            const label = document.getElementById('hexDark');
+            if (dark && label) label.textContent = dark.value;
+        } else {
+            const light = document.getElementById('qrLight');
+            const label = document.getElementById('hexLight');
+            if (light && label) label.textContent = light.value;
+        }
+    }
+
+    function setPreset(text, element) {
+        document.querySelectorAll('.preset-pill').forEach(el => el.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        }
+        const qrInput = document.getElementById('qrText');
+        if (qrInput) {
+            qrInput.value = text;
+        }
         updateCharCount();
         generateQR();
-    });
+    }
 
     function generateQR() {
-        const text = document.getElementById('qrText').value.trim() || 'https://cypherlabs.in';
-        const size = parseInt(document.getElementById('qrSize').value);
-        const dark = document.getElementById('qrDark').value;
-        const light = document.getElementById('qrLight').value;
-        const correction = document.getElementById('qrCorrection').value;
+        const qrInput = document.getElementById('qrText');
         const container = document.getElementById('qrOutputBox');
+        if (!container) return;
+
+        const text = qrInput ? qrInput.value.trim() : 'https://cypherlabs.in';
+        if (!text) {
+            showToast('Please enter text or URL for QR code.');
+            return;
+        }
+
+        const sizeEl = document.getElementById('qrSize');
+        const darkEl = document.getElementById('qrDark');
+        const lightEl = document.getElementById('qrLight');
+        const correctionEl = document.getElementById('qrCorrection');
+
+        const size = sizeEl ? parseInt(sizeEl.value) || 300 : 300;
+        const dark = darkEl ? darkEl.value : '#00d4ff';
+        const light = lightEl ? lightEl.value : '#070913';
+        const correction = correctionEl ? correctionEl.value : 'M';
+
+        if (typeof QRCode === 'undefined') {
+            showToast('Loading QR engine, retrying...');
+            setTimeout(generateQR, 300);
+            return;
+        }
 
         container.innerHTML = '';
 
-        qrInstance = new QRCode(container, {
-            text: text,
-            width: size,
-            height: size,
-            colorDark: dark,
-            colorLight: light,
-            correctLevel: QRCode.CorrectLevel[correction]
-        });
+        try {
+            const correctLevel = (QRCode.CorrectLevel && QRCode.CorrectLevel[correction] !== undefined)
+                ? QRCode.CorrectLevel[correction]
+                : 0;
+
+            qrInstance = new QRCode(container, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: dark,
+                colorLight: light,
+                correctLevel: correctLevel
+            });
+
+            showToast('QR code generated successfully!');
+        } catch (e) {
+            console.error('QR generation error:', e);
+            showToast('Error generating QR code. Content may be too long.');
+        }
     }
 
     function downloadPNG() {
+        const canvas = document.querySelector('#qrOutputBox canvas');
         const img = document.querySelector('#qrOutputBox img');
-        if (!img) return showToast('Generate a QR code first.');
+
+        let dataUrl = '';
+        if (canvas && canvas.toDataURL) {
+            try {
+                dataUrl = canvas.toDataURL('image/png');
+            } catch (e) {
+                // Ignore canvas security errors if any
+            }
+        }
+        if (!dataUrl && img && img.src && !img.src.startsWith('data:image/svg')) {
+            dataUrl = img.src;
+        }
+
+        if (!dataUrl) {
+            return showToast('Generate a QR code first.');
+        }
+
         const link = document.createElement('a');
-        link.href = img.src;
+        link.href = dataUrl;
         link.download = 'CypherLabs-qr.png';
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
         showToast('PNG image downloaded successfully!');
     }
 
     async function copyQRImage() {
+        const canvas = document.querySelector('#qrOutputBox canvas');
         const img = document.querySelector('#qrOutputBox img');
-        if (!img) return showToast('No QR code to copy.');
+
+        if (!canvas && !img) {
+            return showToast('No QR code to copy.');
+        }
+
         try {
-            const response = await fetch(img.src);
-            const blob = await response.blob();
-            await navigator.clipboard.write([
-                new ClipboardItem({ [blob.type]: blob })
-            ]);
-            showToast('QR code copied to clipboard!');
+            if (canvas && canvas.toBlob) {
+                canvas.toBlob(async (blob) => {
+                    if (blob && navigator.clipboard && navigator.clipboard.write) {
+                        try {
+                            await navigator.clipboard.write([
+                                new ClipboardItem({ 'image/png': blob })
+                            ]);
+                            showToast('QR code copied to clipboard!');
+                            return;
+                        } catch (err) {
+                            downloadPNG();
+                        }
+                    } else {
+                        downloadPNG();
+                    }
+                }, 'image/png');
+                return;
+            }
+
+            if (img && img.src) {
+                const response = await fetch(img.src);
+                const blob = await response.blob();
+                if (navigator.clipboard && navigator.clipboard.write) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ [blob.type || 'image/png']: blob })
+                    ]);
+                    showToast('QR code copied to clipboard!');
+                    return;
+                }
+            }
+            downloadPNG();
         } catch (err) {
             downloadPNG();
         }
     }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        updateCharCount();
+        generateQR();
+    });
 </script>
 @endsection
