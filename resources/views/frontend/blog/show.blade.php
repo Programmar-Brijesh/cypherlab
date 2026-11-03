@@ -205,66 +205,48 @@
         max-width: 1160px;
         margin: 0 auto;
         padding: 0 16px;
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 280px;
-        gap: 32px;
-        align-items: start;
+        box-sizing: border-box;
     }
 
-    @media (max-width: 992px) {
-        /* Mobile Layout Ordering (< 992px):
+    @media (min-width: 992px) {
+        .wx-post-container {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 280px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        #wx-mobile-toc-slot {
+            display: none !important;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        /* Mobile Layout Ordering (< 992px) - 100% Normal Document Flow:
            1. Website Navbar (in layout)
-           2. Featured Hero Image (order: 1)
-           3. Table of Contents (order: 2)
-           4. Blog Title & Header (order: 3)
-           5. Blog Content (order: 4)
-           6. Author Information (order: 5)
-           7. Share Article (order: 6)
-           8. Explore More (order: 7)
+           2. Featured Hero Image
+           3. Table of Contents
+           4. Blog Title & Header
+           5. Blog Content
+           6. Author Information
+           7. Share Article
+           8. Explore More
         */
         .wx-post-wrapper {
-            display: flex;
-            flex-direction: column;
+            display: block;
             padding-top: 16px;
         }
 
         .wx-featured-hero-container {
-            order: 1;
+            width: 100%;
+            max-width: 960px;
             margin: 0 auto 20px auto;
-            width: 100%;
+            padding: 0 16px;
             box-sizing: border-box;
         }
 
-        .wx-post-container {
-            display: contents;
-        }
-
-        .wx-post-sidebar {
-            display: contents;
-        }
-
-        #wx-toc-card {
-            order: 2;
-            width: calc(100% - 32px);
-            max-width: 960px;
-            margin: 0 auto 24px auto;
-            box-sizing: border-box;
-        }
-
-        .wx-post-header {
-            order: 3;
-            width: 100%;
-            max-width: 960px;
-            margin: 0 auto 24px auto;
-            box-sizing: border-box;
-        }
-
-        .wx-post-main {
-            display: contents;
-        }
-
-        .wx-post-body {
-            order: 4;
+        #wx-mobile-toc-slot {
+            display: block;
             width: 100%;
             max-width: 960px;
             margin: 0 auto;
@@ -272,27 +254,69 @@
             box-sizing: border-box;
         }
 
-        .wx-author-card {
-            order: 5;
-            width: calc(100% - 32px);
-            max-width: 960px;
-            margin: 32px auto 20px auto;
+        #wx-mobile-toc-slot #wx-toc-card {
+            width: 100%;
+            margin-bottom: 24px;
+            position: static !important;
             box-sizing: border-box;
         }
 
-        .wx-share-card {
-            order: 6;
-            width: calc(100% - 32px);
-            max-width: 960px;
-            margin: 0 auto 20px auto;
-            box-sizing: border-box;
-        }
-
-        .wx-explore-card {
-            order: 7;
-            width: calc(100% - 32px);
+        .wx-post-header {
+            width: 100%;
             max-width: 960px;
             margin: 0 auto 24px auto;
+            padding: 0 16px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .wx-post-container {
+            display: block;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 16px;
+            box-sizing: border-box;
+        }
+
+        .wx-post-main {
+            display: block;
+            width: 100%;
+        }
+
+        .wx-post-body {
+            width: 100%;
+            line-height: 1.78;
+            font-size: 1.02rem;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .wx-author-card {
+            width: 100%;
+            margin: 32px auto 24px auto;
+            box-sizing: border-box;
+        }
+
+        .wx-post-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: static !important;
+            top: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            overflow-y: visible !important;
+            overflow-x: visible !important;
+            padding-right: 0 !important;
+            width: 100% !important;
+            margin-top: 24px;
+            box-sizing: border-box;
+        }
+
+        .wx-sidebar-card {
+            position: static !important;
+            width: 100% !important;
             box-sizing: border-box;
         }
 
@@ -1159,18 +1183,23 @@
 
     /* COMPACT SIDEBAR */
     .wx-post-sidebar {
-        position: sticky;
-        top: 90px;
-        align-self: start;
         display: flex;
         flex-direction: column;
         gap: 16px;
-        max-height: calc(100vh - 105px);
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding-right: 4px;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(0, 212, 255, 0.3) transparent;
+    }
+
+    @media (min-width: 992px) {
+        .wx-post-sidebar {
+            position: sticky;
+            top: 90px;
+            align-self: start;
+            max-height: calc(100vh - 105px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 212, 255, 0.3) transparent;
+        }
     }
 
     .wx-post-sidebar::-webkit-scrollbar {
@@ -1417,6 +1446,9 @@
         <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="wx-featured-hero-img">
     </div>
     @endif
+
+    <!-- MOBILE TOC SLOT (Target container for TOC on screens < 992px) -->
+    <div id="wx-mobile-toc-slot"></div>
 
     <!-- GRID CONTAINER -->
     <div class="wx-post-container">
@@ -1689,9 +1721,76 @@
                 });
             });
         });
+
+        // 4. RESPONSIVE MOBILE / DESKTOP LAYOUT ADAPTER
+        // Ensures strict ordering on mobile (< 992px):
+        // 1. Website Navbar
+        // 2. Featured Image
+        // 3. Table of Contents (TOC)
+        // 4. Blog Title and Meta
+        // 5. Blog Content
+        // 6. Author Information
+        // 7. Share Article
+        // 8. Explore More
+        const postWrapper = document.querySelector('.wx-post-wrapper');
+        const postHeader = document.querySelector('.wx-post-header');
+        const heroContainer = document.querySelector('.wx-featured-hero-container');
+        const postContainer = document.querySelector('.wx-post-container');
+        const postSidebar = document.querySelector('.wx-post-sidebar');
+        const mobileTocSlot = document.getElementById('wx-mobile-toc-slot');
+        const layoutMediaQuery = window.matchMedia('(max-width: 991.98px)');
+
+        function applyResponsiveLayout() {
+            if (!postWrapper || !postHeader || !postContainer || !postSidebar) return;
+
+            if (layoutMediaQuery.matches) {
+                // Mobile layout (< 992px)
+                if (heroContainer) {
+                    postWrapper.prepend(heroContainer);
+                    if (mobileTocSlot) heroContainer.after(mobileTocSlot);
+                } else if (mobileTocSlot) {
+                    postWrapper.prepend(mobileTocSlot);
+                }
+
+                if (mobileTocSlot && tocCard) {
+                    if (headings.length > 0) {
+                        mobileTocSlot.appendChild(tocCard);
+                        mobileTocSlot.style.display = 'block';
+                    } else {
+                        mobileTocSlot.style.display = 'none';
+                    }
+                    mobileTocSlot.after(postHeader);
+                } else if (mobileTocSlot) {
+                    mobileTocSlot.after(postHeader);
+                }
+
+                postHeader.after(postContainer);
+            } else {
+                // Desktop layout (>= 992px)
+                postWrapper.prepend(postHeader);
+                if (heroContainer) {
+                    postHeader.after(heroContainer);
+                    heroContainer.after(postContainer);
+                } else {
+                    postHeader.after(postContainer);
+                }
+
+                if (tocCard) {
+                    postSidebar.prepend(tocCard);
+                }
+            }
+        }
+
+        if (layoutMediaQuery.addEventListener) {
+            layoutMediaQuery.addEventListener('change', applyResponsiveLayout);
+        } else if (layoutMediaQuery.addListener) {
+            layoutMediaQuery.addListener(applyResponsiveLayout);
+        }
+
+        applyResponsiveLayout();
     });
 
-    // 4. COPY ARTICLE LINK TOAST
+    // 5. COPY ARTICLE LINK TOAST
     function copyArticleLink() {
         navigator.clipboard.writeText(window.location.href).then(() => {
             const toast = document.getElementById('wx-toast');

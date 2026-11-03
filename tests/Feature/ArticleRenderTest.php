@@ -73,11 +73,13 @@ class ArticleRenderTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('id="wx-toc-card"', false);
         $response->assertSee('id="wx-toc-list"', false);
+        $response->assertSee('id="wx-mobile-toc-slot"', false);
         $response->assertSee('What Is a QR Code Generator?');
         $response->assertSee('Key Features');
         $response->assertSee('How to Create a QR Code');
         $response->assertSee('Frequently Asked Questions');
         $response->assertSee('scrollActiveTocItemIntoView', false);
+        $response->assertSee('applyResponsiveLayout', false);
     }
 }
 
